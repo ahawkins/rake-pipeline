@@ -1,1 +1,1 @@
--cfs -r spec_helper.rb
+-cfs --order random -r spec_helper.rb
