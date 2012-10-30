@@ -163,6 +163,7 @@ HERE
 
     it "can be configured using the pipeline" do
       pipeline = Rake::Pipeline.new
+      pipeline.project = Rake::Pipeline::Project.new
       pipeline.add_input tmp, 'app/javascripts/*.js'
       pipeline.output_root = File.expand_path("public")
       pipeline.tmpdir = "temporary"
@@ -537,6 +538,8 @@ HERE
         File.open imported_file, "w" do |f| 
           f.write "true to trance"
         end
+
+        $LATCH = true
 
         project.invoke
         content = File.read output_file
