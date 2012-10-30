@@ -103,23 +103,12 @@ module Rake
         self
       end
 
-      # Invoke all of the project's pipelines.
-      #
-      # @see Rake::Pipeline#invoke
-      def invoke
-        @invoke_mutex.synchronize do
-          manifest.read_manifest
-          pipelines.each(&:invoke)
-          manifest.write_manifest
-        end
-      end
-
       # Invoke all of the project's pipelines, detecting any changes
       # to the Assetfile and rebuilding the pipelines if necessary.
       #
       # @return [void]
-      # @see Rake::Pipeline#invoke_clean
-      def invoke_clean
+      # @see Rake::Pipeline#invoke
+      def invoke
         @invoke_mutex.synchronize do
           if assetfile_path
             source = File.read(assetfile_path)
@@ -128,8 +117,8 @@ module Rake
             end
           end
 
-          manifest.read_manifest
-          pipelines.each(&:invoke_clean)
+          last_manifest.read_manifest
+          pipelines.each(&:invoke)
           manifest.write_manifest
         end
       end
@@ -224,6 +213,12 @@ module Rake
       #   to
       def manifest
         @manifest ||= Rake::Pipeline::Manifest.new(manifest_path)
+      end
+
+      # @return [Manifest] the manifest to write dependency information
+      #   to
+      def last_manifest
+        @last_manifest ||= Rake::Pipeline::Manifest.new(manifest_path)
       end
 
       # @return [String] the path to the dynamic dependency manifest
